@@ -10,6 +10,8 @@ use bevy::{
     prelude::*,
 };
 
+use bevy_atmosphere::prelude::*;
+
 pub struct AppPlugin;
 
 impl Plugin for AppPlugin {
@@ -46,7 +48,8 @@ impl Plugin for AppPlugin {
                 })
                 .set(AudioPlugin {
                     global_volume: GlobalVolume {
-                        volume: Volume::new(0.3),
+                        // volume: Volume::new(0.3),
+                        volume: Volume::new(0.0),
                     },
                     ..default()
                 }),
@@ -54,6 +57,9 @@ impl Plugin for AppPlugin {
 
         // Add other plugins.
         app.add_plugins((game::plugin, screen::plugin, ui::plugin));
+
+        // 3rd Party Plugins
+        app.add_plugins(AtmospherePlugin);
 
         // Enable dev tools for dev builds.
         #[cfg(feature = "dev")]
@@ -77,7 +83,11 @@ enum AppSet {
 fn spawn_camera(mut commands: Commands) {
     commands.spawn((
         Name::new("Camera"),
-        Camera2dBundle::default(),
+        AtmosphereCamera::default(),
+        Camera3dBundle {
+            transform: Transform::from_xyz(100.0, 0.0, 0.0).looking_at(Vec3::ZERO, Vec3::Y),
+            ..default()
+        },
         // Render all UI to this camera.
         // Not strictly necessary since we only use one camera,
         // but if we don't use this component, our UI will disappear as soon
